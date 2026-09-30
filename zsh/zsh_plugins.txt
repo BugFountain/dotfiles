@@ -1,0 +1,4 @@
+# Static plugin list for antidote (https://getantidote.github.io/)
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-syntax-highlighting
+zsh-users/zsh-completions

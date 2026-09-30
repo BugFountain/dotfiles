@@ -1,3 +1,16 @@
-# Core terminal stack — brew bundle --file=Brewfile
+# Terminal stack B — brew bundle --file=Brewfile
 cask "ghostty"
 cask "font-monocraft-nerd-font"
+
+brew "starship"
+brew "atuin"
+brew "fzf"
+brew "zoxide"
+brew "eza"
+brew "bat"
+brew "ripgrep"
+brew "fd"
+brew "git-delta"
+brew "lazygit"
+brew "antidote"
+brew "mise"

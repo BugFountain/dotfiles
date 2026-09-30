@@ -1,6 +1,6 @@
-# Diego’s Mac terminal dotfiles
+# Diego’s Mac terminal dotfiles (Stack B)
 
-Portable Ghostty setup. Drag this folder onto any Mac, run one command, done.
+Portable **Ghostty + zsh + Starship** setup. Drag this folder onto any Mac, run one command.
 
 ## One-command install
 
@@ -8,38 +8,42 @@ Portable Ghostty setup. Drag this folder onto any Mac, run one command, done.
 cd /path/to/dotfiles && ./install.sh
 ```
 
-What it does:
+Installs Homebrew (if needed), Ghostty, Monocraft, Starship, antidote plugins, atuin/fzf/zoxide/mise, and the eza/bat/rg/fd/delta/lazygit kit. Symlinks configs. Opens Ghostty.
 
-1. Installs Homebrew if missing
-2. Installs **Ghostty**
-3. Installs **Monocraft Nerd Font** (Homebrew cask, or from `fonts/` in this folder)
-4. Symlinks `~/.config/ghostty` → this repo’s `ghostty/`
-5. Opens Ghostty
+## Stack
 
-Safe to re-run (idempotent). Does **not** touch your zsh / Oh My Zsh / p10k setup.
+| Layer | Choice |
+|-------|--------|
+| Terminal | Ghostty · Catppuccin Mocha · Monocraft |
+| Shell | zsh (no Oh My Zsh / no Powerlevel10k) |
+| Prompt | Starship (Catppuccin Powerline) |
+| Plugins | antidote → autosuggestions, syntax-highlighting, completions |
+| History | atuin + fzf |
+| Nav | zoxide |
+| Runtimes | mise (+ existing nvm/rbenv lean PATH kept) |
+| CLI | eza, bat, ripgrep, fd, delta, lazygit |
 
-## Drag-and-drop
-
-Copy the whole `dotfiles` folder (USB, AirDrop, git clone — whatever). The `fonts/` copy of Monocraft is included so a fresh Mac still looks right offline.
+Agent-safe lean shell: skips Starship/plugins when `CURSOR_AGENT`, `COMPOSER_NO_INTERACTION`, or `CLAUDE_CODE_CHILD_SESSION` is set.
 
 ## Layout
 
 ```
 dotfiles/
-  install.sh          # bootstrap
-  Brewfile            # optional: brew bundle
-  ghostty/config      # Ghostty settings
-  fonts/              # Monocraft Nerd Font fallback
-  README.md
+  install.sh
+  Brewfile
+  starship.toml
+  ghostty/config
+  fonts/Monocraft-…
+  zsh/{zshenv,zprofile,zshrc,lean-path,runtimes,aliases,…}
 ```
 
 ## After install
 
-- Open Ghostty (Spotlight → Ghostty)
-- `⌘,` opens config; `⌘⇧,` reloads
-- Theme: Catppuccin Mocha · Font: Monocraft 15 (same as your iTerm)
+- New Ghostty tab → Starship prompt
+- `⌘,` / `⌘⇧,` Ghostty config
+- Rollback: copy files from a local `backups/` (created on first install; not in git)
 
 ## Optional later
 
 - herdr for multi-agent panes: https://herdr.dev/
-- Superlogical waitlist (next-gen mux): https://superlogical.com/
+- Migrate nvm/rbenv fully onto mise when ready

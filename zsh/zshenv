@@ -1,0 +1,11 @@
+# Sourced for every zsh invocation (interactive, non-interactive, login).
+# Agents often spawn non-interactive shells that skip ~/.zshrc — PATH must live here.
+
+export DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+
+[[ -f "$DOTFILES/zsh/lean-path.zsh" ]] && source "$DOTFILES/zsh/lean-path.zsh"
+
+# Non-interactive shells never read ~/.zshrc — load runtimes here.
+if [[ ! -o interactive ]] && [[ -f "$DOTFILES/zsh/runtimes.zsh" ]]; then
+  source "$DOTFILES/zsh/runtimes.zsh"
+fi

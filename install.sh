@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-shot Mac bootstrap for Diego's Ghostty dotfiles.
+# One-shot Mac bootstrap — Ghostty + Stack B shell.
 # Usage: cd /path/to/dotfiles && ./install.sh
 set -euo pipefail
 
@@ -8,104 +8,129 @@ CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 GHOSTTY_DIR="$CONFIG_HOME/ghostty"
 FONT_SRC="$DOTFILES/fonts/Monocraft-nerd-fonts-patched.ttc"
 FONT_DST="$HOME/Library/Fonts/Monocraft-nerd-fonts-patched.ttc"
+BACKUP_DIR="$DOTFILES/backups/pre-install-$(date +%Y%m%d%H%M%S)"
 
 need_mac() {
   if [[ "$(uname -s)" != "Darwin" ]]; then
-    echo "This installer targets macOS. On Linux, install Ghostty from your distro and symlink:"
-    echo "  mkdir -p \"$CONFIG_HOME\" && ln -sfn \"$DOTFILES/ghostty\" \"$GHOSTTY_DIR\""
+    echo "macOS installer. On Linux: install deps yourself, then symlink zsh + ghostty configs from $DOTFILES"
     exit 1
   fi
 }
 
 ensure_brew() {
-  if command -v brew >/dev/null 2>&1; then
-    return 0
-  fi
+  if command -v brew >/dev/null 2>&1; then return 0; fi
   echo "→ Installing Homebrew…"
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  if [[ -x /opt/homebrew/bin/brew ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x /usr/local/bin/brew ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
-  if ! command -v brew >/dev/null 2>&1; then
-    echo "Homebrew install finished but brew is not on PATH. Open a new terminal and re-run ./install.sh"
-    exit 1
-  fi
+  if [[ -x /opt/homebrew/bin/brew ]]; then eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -x /usr/local/bin/brew ]]; then eval "$(/usr/local/bin/brew shellenv)"; fi
+  command -v brew >/dev/null 2>&1 || { echo "brew not on PATH — open a new terminal and re-run"; exit 1; }
 }
 
-install_ghostty() {
-  if [[ -d /Applications/Ghostty.app ]]; then
-    echo "✓ Ghostty already installed"
-    return 0
+brew_pkgs() {
+  echo "→ Installing Stack B packages (Brewfile)…"
+  HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --file="$DOTFILES/Brewfile" || true
+  # Ghostty cask may already be present; ensure CLI tools exist
+  local pkgs=(starship atuin fzf zoxide eza bat ripgrep fd git-delta lazygit antidote mise)
+  local missing=()
+  for p in "${pkgs[@]}"; do
+    brew list --formula "$p" >/dev/null 2>&1 || missing+=("$p")
+  done
+  if ((${#missing[@]})); then
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install "${missing[@]}"
   fi
-  echo "→ Installing Ghostty…"
-  HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask ghostty
+  if [[ ! -d /Applications/Ghostty.app ]]; then
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask ghostty
+  else
+    echo "✓ Ghostty already installed"
+  fi
 }
 
 install_font() {
-  local ok=0
-  if fc-list 2>/dev/null | grep -qi 'Monocraft'; then
-    echo "✓ Monocraft already available"
-    return 0
-  fi
   if ls "$HOME/Library/Fonts"/Monocraft* >/dev/null 2>&1; then
-    echo "✓ Monocraft already in ~/Library/Fonts"
-    return 0
+    echo "✓ Monocraft already in ~/Library/Fonts"; return 0
   fi
-
   echo "→ Installing Monocraft Nerd Font…"
   if HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask font-monocraft-nerd-font 2>/dev/null; then
-    ok=1
-  elif HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask font-monocraft 2>/dev/null; then
-    ok=1
-  fi
-
-  if [[ $ok -eq 0 && -f "$FONT_SRC" ]]; then
-    echo "→ Falling back to bundled font in fonts/"
+    echo "✓ Font via Homebrew"
+  elif [[ -f "$FONT_SRC" ]]; then
     mkdir -p "$HOME/Library/Fonts"
     cp -f "$FONT_SRC" "$FONT_DST"
-    ok=1
-  fi
-
-  if [[ $ok -eq 0 ]]; then
-    echo "⚠ Could not install Monocraft. Ghostty will fall back to the system mono font."
-    echo "  Copy a .ttc/.ttf into ~/Library/Fonts or: brew install --cask font-monocraft-nerd-font"
+    echo "✓ Font from bundled fonts/"
   else
-    echo "✓ Font installed"
+    echo "⚠ Monocraft missing — Ghostty will fall back to system mono"
   fi
 }
 
-link_config() {
+backup_file() {
+  local f="$1"
+  [[ -e "$f" || -L "$f" ]] || return 0
+  mkdir -p "$BACKUP_DIR"
+  cp -a "$f" "$BACKUP_DIR/"
+}
+
+link_shell() {
+  echo "→ Linking shell configs…"
+  backup_file "$HOME/.zshrc"
+  backup_file "$HOME/.zshenv"
+  backup_file "$HOME/.zprofile"
+  # Keep ~/.p10k.zsh on disk but unused (rollback)
+  ln -sfn "$DOTFILES/zsh/zshrc" "$HOME/.zshrc"
+  ln -sfn "$DOTFILES/zsh/zshenv" "$HOME/.zshenv"
+  ln -sfn "$DOTFILES/zsh/zprofile" "$HOME/.zprofile"
+  echo "✓ ~/.zshrc ~/.zshenv ~/.zprofile → $DOTFILES/zsh/"
+}
+
+link_starship_ghostty() {
   mkdir -p "$CONFIG_HOME"
+  backup_file "$CONFIG_HOME/starship.toml"
+  ln -sfn "$DOTFILES/starship.toml" "$CONFIG_HOME/starship.toml"
+
   if [[ -e "$GHOSTTY_DIR" && ! -L "$GHOSTTY_DIR" ]]; then
-    local bak="$GHOSTTY_DIR.bak.$(date +%Y%m%d%H%M%S)"
-    echo "→ Backing up existing $GHOSTTY_DIR → $bak"
-    mv "$GHOSTTY_DIR" "$bak"
+    mkdir -p "$BACKUP_DIR"
+    mv "$GHOSTTY_DIR" "$BACKUP_DIR/ghostty"
   fi
   ln -sfn "$DOTFILES/ghostty" "$GHOSTTY_DIR"
-  echo "✓ Linked $GHOSTTY_DIR → $DOTFILES/ghostty"
+  echo "✓ Ghostty + Starship configs linked"
+}
+
+prime_antidote() {
+  # Warm plugin bundle so first interactive shell is fast
+  if [[ -r /opt/homebrew/opt/antidote/share/antidote/antidote.zsh ]]; then
+    zsh -c 'source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh && antidote bundle < "$DOTFILES/zsh/zsh_plugins.txt" >/dev/null' \
+      && echo "✓ antidote plugins bundled" || echo "⚠ antidote bundle skipped (ok on first open)"
+  fi
+}
+
+git_delta_hint() {
+  if command -v delta >/dev/null 2>&1 && command -v git >/dev/null 2>&1; then
+    git config --global core.pager delta 2>/dev/null || true
+    git config --global interactive.diffFilter "delta --color-only" 2>/dev/null || true
+    git config --global delta.navigate true 2>/dev/null || true
+    echo "✓ git pager → delta"
+  fi
 }
 
 open_ghostty() {
-  if [[ -d /Applications/Ghostty.app ]]; then
-    echo "→ Opening Ghostty…"
-    open -a Ghostty
-  fi
+  [[ -d /Applications/Ghostty.app ]] && open -a Ghostty || true
 }
 
 main() {
-  echo "═══ Diego dotfiles → Ghostty ═══"
+  echo "═══ Diego dotfiles → Stack B ═══"
   echo "From: $DOTFILES"
   need_mac
   ensure_brew
-  install_ghostty
+  brew_pkgs
   install_font
-  link_config
+  link_shell
+  link_starship_ghostty
+  export DOTFILES
+  prime_antidote
+  git_delta_hint
   open_ghostty
   echo
-  echo "Done. Ghostty config lives in this folder — drag the whole 'dotfiles' dir to another Mac and run ./install.sh again."
-  echo "Reload config anytime with ⌘⇧,  ·  Edit with ⌘,"
+  echo "Done. Open a new Ghostty tab to load Starship."
+  echo "Rollback copies (if any): $BACKUP_DIR"
+  echo "Legacy p10k left at ~/.p10k.zsh (unused)."
 }
 
 main "$@"
