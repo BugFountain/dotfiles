@@ -1,5 +1,8 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# Default 500ms is tight when Homebrew bun cold-starts under Gatekeeper/AV
+command_timeout = 2000
+
 format = """
 [](red)\
 $os\
@@ -94,6 +97,10 @@ format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 symbol = ""
 style = "bg:green"
 format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+# Home has a package.json; don't treat every dir as Bun
+detect_extensions = []
+detect_files = ['bunfig.toml', 'bun.lock', 'bun.lockb']
+detect_folders = []
 
 [c]
 symbol = " "
