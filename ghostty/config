@@ -1,0 +1,49 @@
+# Diego Ghostty — portable via ~/dotfiles
+# Docs: https://ghostty.org/docs/config
+
+# Theme matches existing Catppuccin Mocha zsh/iTerm look
+theme = Catppuccin Mocha
+
+# Same face as iTerm (Nerd Font patch for p10k / glyphs)
+font-family = Monocraft
+font-size = 15
+font-thicken = true
+
+# Comfortable grid + padding
+window-padding-x = 12
+window-padding-y = 10
+window-padding-balance = true
+adjust-cell-height = 15%
+
+# macOS chrome that feels native without fighting tabs
+macos-titlebar-style = tabs
+macos-option-as-alt = true
+window-save-state = always
+window-inherit-working-directory = true
+window-inherit-font-size = true
+
+# Shell / clipboard
+shell-integration = zsh
+shell-integration-features = cursor,sudo,title
+copy-on-select = clipboard
+clipboard-paste-protection = true
+mouse-hide-while-typing = true
+
+# Readability
+minimum-contrast = 1.1
+cursor-style = bar
+cursor-style-blink = false
+scrollback-limit = 50000000
+
+# Splits
+unfocused-split-opacity = 0.85
+keybind = super+d=new_split:right
+keybind = super+shift+d=new_split:down
+keybind = super+[=goto_split:previous
+keybind = super+]=goto_split:next
+
+# Quick terminal (bind yourself if you want a drop-down)
+# keybind = global:super+grave=toggle_quick_terminal
+
+# Auto-update on the stable channel
+auto-update-channel = stable
