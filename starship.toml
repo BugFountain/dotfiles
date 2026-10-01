@@ -3,6 +3,7 @@
 # Default 500ms is tight when Homebrew bun cold-starts under Gatekeeper/AV
 command_timeout = 2000
 
+# Git is flat purple text (no powerline body) so an idle ~ can't leave an empty wedge.
 format = """
 [](candy)\
 $os\
@@ -11,8 +12,7 @@ $username\
 $directory\
 $git_branch\
 $git_status\
-${custom.git_to_mint}\
-${custom.trans_mint}\
+[](fg:surface2 bg:mint)\
 $c\
 $rust\
 $golang\
@@ -79,25 +79,11 @@ truncation_symbol = "…/"
 
 [git_branch]
 symbol = ""
-style = "bg:purple"
-format = '[](fg:surface2 bg:purple)[ $symbol $branch ](fg:bg bg:purple)'
+# Flat on the surface2 pill — no purple powerline body (avoids empty wedge in ~)
+format = '[ $symbol $branch](fg:purple bg:surface2)'
 
 [git_status]
-style = "bg:purple"
-format = '[( $all_status$ahead_behind)](fg:bg bg:purple)'
-
-[custom.git_to_mint]
-description = "Powerline join git→langs when in a repo"
-when = 'git rev-parse --is-inside-work-tree >/dev/null 2>&1'
-format = '[](fg:purple bg:mint)'
-shell = ['/bin/zsh', '-c']
-
-# When not in a git repo, still need surface2 → mint (git modules emit nothing)
-[custom.trans_mint]
-description = "Powerline join directory→langs when git modules are hidden"
-when = '! git rev-parse --is-inside-work-tree >/dev/null 2>&1'
-format = '[](fg:surface2 bg:mint)'
-shell = ['/bin/zsh', '-c']
+format = '([ $all_status$ahead_behind](fg:candy2 bg:surface2))'
 
 [nodejs]
 symbol = ""
@@ -108,7 +94,6 @@ format = '[[ $symbol( $version) ](fg:bg bg:mint)]($style)'
 symbol = ""
 style = "bg:mint"
 format = '[[ $symbol( $version) ](fg:bg bg:mint)]($style)'
-# Home has a package.json; don't treat every dir as Bun
 detect_extensions = []
 detect_files = ['bunfig.toml', 'bun.lock', 'bun.lockb']
 detect_folders = []
@@ -159,10 +144,7 @@ style = "bg:surface"
 format = '[[ $symbol( $context) ](fg:ink bg:surface)]($style)'
 
 [conda]
-symbol = "  "
-style = "fg:ink bg:surface"
-format = '[$symbol$environment ]($style)'
-ignore_base = false
+disabled = true
 
 [time]
 disabled = false
