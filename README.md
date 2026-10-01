@@ -8,7 +8,7 @@ Portable **Ghostty + zsh + Starship** setup. Drag this folder onto any Mac, run 
 cd /path/to/dotfiles && ./install.sh
 ```
 
-Installs Homebrew (if needed), Ghostty, Monocraft, Starship, antidote plugins, atuin/fzf/zoxide/mise, and the eza/bat/rg/fd/delta/lazygit kit. Symlinks configs. Opens Ghostty.
+Installs Homebrew (if needed), Ghostty, Monocraft, Starship, antidote plugins, atuin/fzf/zoxide/mise, herdr, and the eza/bat/rg/fd/delta/lazygit kit. Symlinks configs (including herdr). Opens Ghostty.
 
 ## Stack
 
@@ -22,8 +22,9 @@ Installs Homebrew (if needed), Ghostty, Monocraft, Starship, antidote plugins, a
 | Nav | zoxide |
 | Runtimes | mise (+ existing nvm/rbenv lean PATH kept) |
 | CLI | eza, bat, ripgrep, fd, delta, lazygit |
+| Multiplexer | herdr (opt-in; Ghostty stays default) |
 
-Agent-safe lean shell: skips Starship/plugins when `CURSOR_AGENT`, `COMPOSER_NO_INTERACTION`, or `CLAUDE_CODE_CHILD_SESSION` is set.
+Agent-safe lean shell: skips Starship/plugins when `CURSOR_AGENT`, `COMPOSER_NO_INTERACTION`, `CLAUDE_CODE_CHILD_SESSION`, or (`HERDR_ENV` + `HERDR_LEAN=1`) is set.
 
 ## Layout
 
@@ -33,17 +34,19 @@ dotfiles/
   Brewfile
   starship.toml
   ghostty/config
+  herdr/{config.toml,README.md}
   fonts/Monocraft-…
-  zsh/{zshenv,zprofile,zshrc,lean-path,runtimes,aliases,…}
+  zsh/{zshenv,zprofile,zshrc,lean-path,runtimes,aliases,completions/…}
 ```
 
 ## After install
 
 - New Ghostty tab → Starship prompt
 - `⌘,` / `⌘⇧,` Ghostty config
+- Optional multi-agent panes: `export HERDR_LEAN=1 && herdr` (see `herdr/README.md`) — Ghostty does **not** auto-launch herdr
 - Rollback: copy files from a local `backups/` (created on first install; not in git)
 
 ## Optional later
 
-- herdr for multi-agent panes: https://herdr.dev/
+- Grok Build CLI herdr integration (Grok Bot cannot live in herdr)
 - Migrate nvm/rbenv fully onto mise when ready

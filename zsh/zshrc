@@ -19,8 +19,8 @@ _zsh_is_lean_shell() {
   return 1
 }
 
-# Completions path (Homebrew + zsh-completions via antidote)
-fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
+# Completions path (dotfiles + Homebrew + zsh-completions via antidote)
+fpath=("$DOTFILES/zsh/completions" /opt/homebrew/share/zsh/site-functions $fpath)
 autoload -Uz compinit
 compinit -C
 

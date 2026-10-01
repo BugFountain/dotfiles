@@ -1,0 +1,66 @@
+# Diego Stack B — herdr (cyberpunk)
+# Docs: https://herdr.dev/docs/configuration/
+# Symlinked from ~/.config/herdr/config.toml
+
+onboarding = false
+
+[session]
+resume_agents_on_restore = true
+
+[theme]
+# Base + cyberpunk overrides (Ghostty/Starship aligned)
+name = "catppuccin"
+
+[theme.custom]
+# bg #07060b · ink #f1efe8 · mute #9a96a8
+# surface #14121c · surface2 #1c1828
+# candy #ff2d6a · purple #8b7cff · mint #7dffa8
+panel_bg = "#07060b"
+sidebar_bg = "#07060b"
+surface_dim = "#07060b"
+surface0 = "#14121c"
+surface1 = "#1c1828"
+active_row_bg = "#14121c"
+selection_bg = "#1c1828"
+overlay0 = "#9a96a8"
+overlay1 = "#9a96a8"
+text = "#f1efe8"
+subtext0 = "#9a96a8"
+accent = "#ff2d6a"
+red = "#ff2d6a"
+mauve = "#8b7cff"
+blue = "#8b7cff"
+green = "#7dffa8"
+teal = "#7dffa8"
+peach = "#ff2d6a"
+yellow = "#7dffa8"
+
+[ui]
+accent = "#ff2d6a"
+
+[ui.toast]
+delivery = "herdr"
+delay_seconds = 1
+
+[ui.toast.herdr]
+position = "bottom-right"
+
+[keys]
+prefix = "ctrl+b"
+
+# Quick-launch agent panes (prefix then chord)
+[[keys.command]]
+key = "prefix+alt+c"
+type = "pane"
+command = "claude"
+description = "start Claude Code"
+
+[[keys.command]]
+key = "prefix+alt+a"
+type = "pane"
+command = "cursor-agent"
+description = "start Cursor Agent CLI"
+
+[terminal]
+shell_mode = "auto"
+new_cwd = "follow"

@@ -30,7 +30,7 @@ brew_pkgs() {
   echo "→ Installing Stack B packages (Brewfile)…"
   HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --file="$DOTFILES/Brewfile" || true
   # Ghostty cask may already be present; ensure CLI tools exist
-  local pkgs=(starship atuin fzf zoxide eza bat ripgrep fd git-delta lazygit antidote mise)
+  local pkgs=(starship atuin fzf zoxide eza bat ripgrep fd git-delta lazygit antidote mise herdr)
   local missing=()
   for p in "${pkgs[@]}"; do
     brew list --formula "$p" >/dev/null 2>&1 || missing+=("$p")
@@ -93,6 +93,21 @@ link_starship_ghostty() {
   echo "✓ Ghostty + Starship configs linked"
 }
 
+
+link_herdr() {
+  echo "→ Linking herdr config…"
+  local herdr_dir="$CONFIG_HOME/herdr"
+  mkdir -p "$herdr_dir"
+  backup_file "$herdr_dir/config.toml"
+  ln -sfn "$DOTFILES/herdr/config.toml" "$herdr_dir/config.toml"
+  echo "✓ ~/.config/herdr/config.toml → $DOTFILES/herdr/config.toml"
+  if command -v herdr >/dev/null 2>&1; then
+    echo "  herdr $(herdr --version 2>/dev/null || true) — opt-in: run \`herdr\` (Ghostty unchanged)"
+  else
+    echo "⚠ herdr not on PATH yet — brew install herdr, then re-run or open a new shell"
+  fi
+}
+
 prime_antidote() {
   # Warm plugin bundle so first interactive shell is fast
   if [[ -r /opt/homebrew/opt/antidote/share/antidote/antidote.zsh ]]; then
@@ -123,12 +138,13 @@ main() {
   install_font
   link_shell
   link_starship_ghostty
+  link_herdr
   export DOTFILES
   prime_antidote
   git_delta_hint
   open_ghostty
   echo
-  echo "Done. Open a new Ghostty tab to load Starship."
+  echo "Done. Open a new Ghostty tab to load Starship. Optional: herdr (see herdr/README.md)."
   echo "Rollback copies (if any): $BACKUP_DIR"
   echo "Legacy p10k left at ~/.p10k.zsh (unused)."
 }
