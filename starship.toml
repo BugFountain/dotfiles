@@ -153,7 +153,7 @@ disabled = true
 [character]
 disabled = false
 success_symbol = '[❯](bold fg:mint)'
-error_symbol = '[❯](bold fg:candy)'
+error_symbol = '[❯](bold fg:purple)'  # failed cmd — purple accent, not candy scream
 vimcmd_symbol = '[❮](bold fg:mint)'
 vimcmd_replace_one_symbol = '[❮](bold fg:purple)'
 vimcmd_replace_symbol = '[❮](bold fg:purple)'
