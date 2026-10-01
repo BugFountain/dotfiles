@@ -9,10 +9,10 @@ $os\
 $username\
 [](bg:surface2 fg:candy)\
 $directory\
-[](bg:purple fg:surface2)\
 $git_branch\
 $git_status\
-[](fg:purple bg:mint)\
+${custom.git_to_mint}\
+${custom.trans_mint}\
 $c\
 $rust\
 $golang\
@@ -80,11 +80,24 @@ truncation_symbol = "…/"
 [git_branch]
 symbol = ""
 style = "bg:purple"
-format = '[[ $symbol $branch ](fg:bg bg:purple)]($style)'
+format = '[](fg:surface2 bg:purple)[ $symbol $branch ](fg:bg bg:purple)'
 
 [git_status]
 style = "bg:purple"
-format = '[[($all_status$ahead_behind )](fg:bg bg:purple)]($style)'
+format = '[( $all_status$ahead_behind)](fg:bg bg:purple)'
+
+[custom.git_to_mint]
+description = "Powerline join git→langs when in a repo"
+when = 'git rev-parse --is-inside-work-tree >/dev/null 2>&1'
+format = '[](fg:purple bg:mint)'
+shell = ['/bin/zsh', '-c']
+
+# When not in a git repo, still need surface2 → mint (git modules emit nothing)
+[custom.trans_mint]
+description = "Powerline join directory→langs when git modules are hidden"
+when = '! git rev-parse --is-inside-work-tree >/dev/null 2>&1'
+format = '[](fg:surface2 bg:mint)'
+shell = ['/bin/zsh', '-c']
 
 [nodejs]
 symbol = ""
