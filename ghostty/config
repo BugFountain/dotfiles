@@ -70,8 +70,9 @@ keybind = super+]=goto_split:next
 auto-update-channel = stable
 
 # UI chrome (tabs / splits / titlebar) — match cyberpunk bg so panes aren't "empty black"
-macos-titlebar-background = #07060b
-macos-titlebar-foreground = #f1efe8
 split-divider-color = #1c1828
 unfocused-split-fill = #14121c
 unfocused-split-opacity = 0.92
+
+# macOS tabs/titlebar follow terminal bg luminosity; force dark for cyberpunk
+window-theme = dark
