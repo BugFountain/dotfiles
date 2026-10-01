@@ -23,9 +23,7 @@ $java\
 $kotlin\
 $haskell\
 $python\
-[](fg:mint bg:surface)\
-$conda\
-[](fg:surface bg:mute)\
+[](fg:mint bg:mute)\
 $time\
 [ ](fg:mute)\
 $cmd_duration\
