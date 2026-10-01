@@ -8,11 +8,11 @@ format = """
 [](candy)\
 $os\
 $username\
-[](bg:surface2 fg:candy)\
+[](bg:mute fg:candy)\
 $directory\
 $git_branch\
 $git_status\
-[](fg:surface2 bg:mint)\
+[](fg:mute bg:mint)\
 $c\
 $rust\
 $golang\
@@ -65,7 +65,7 @@ style_root = "bg:candy fg:bg"
 format = '[ $user]($style)'
 
 [directory]
-style = "bg:surface2 fg:ink"
+style = "bg:mute fg:bg"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
@@ -80,10 +80,10 @@ truncation_symbol = "…/"
 [git_branch]
 symbol = ""
 # Flat on the surface2 pill — no purple powerline body (avoids empty wedge in ~)
-format = '[ $symbol $branch](fg:purple bg:surface2)'
+format = '[ $symbol $branch](fg:purple bg:mute)'
 
 [git_status]
-format = '([ $all_status$ahead_behind](fg:candy2 bg:surface2))'
+format = '([ $all_status$ahead_behind](fg:candy2 bg:mute))'
 
 [nodejs]
 symbol = ""
