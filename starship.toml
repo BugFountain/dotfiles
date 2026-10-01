@@ -3,29 +3,24 @@
 # Default 500ms is tight when Homebrew bun cold-starts under Gatekeeper/AV
 command_timeout = 2000
 
-# Git is flat purple text (no powerline body) so an idle ~ can't leave an empty wedge.
+#   candy   = loud solid (os/username only)
+#   surface2 = quiet powerline body (directory / git / langs)
+#   surface  = time pill
+#   mute     = secondary TEXT only (never a powerline background)
+#   purple / mint / candy2 = FG accents on surface2 (never big fills)
+# Continuous surface2 band into surface so empty lang modules leave no wedge.
 format = """
 [](candy)\
 $os\
 $username\
-[](bg:mute fg:candy)\
+[](bg:surface2 fg:candy)\
 $directory\
 $git_branch\
 $git_status\
-[](fg:mute bg:mint)\
-$c\
-$rust\
-$golang\
-$nodejs\
-$bun\
-$php\
-$java\
-$kotlin\
-$haskell\
-$python\
-[](fg:mint bg:mute)\
+$c$rust$golang$nodejs$bun$php$java$kotlin$haskell$python\
+[](fg:surface2 bg:surface)\
 $time\
-[ ](fg:mute)\
+[ ](fg:surface)\
 $cmd_duration\
 $line_break\
 $character"""
@@ -65,7 +60,7 @@ style_root = "bg:candy fg:bg"
 format = '[ $user]($style)'
 
 [directory]
-style = "bg:mute fg:bg"
+style = "bg:surface2 fg:ink"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
@@ -79,64 +74,64 @@ truncation_symbol = "…/"
 
 [git_branch]
 symbol = ""
-# Flat on the surface2 pill — no purple powerline body (avoids empty wedge in ~)
-format = '[ $symbol $branch](fg:purple bg:mute)'
+# Flat purple FG on surface2 — no purple powerline body
+format = '[ $symbol $branch](fg:purple bg:surface2)'
 
 [git_status]
-format = '([ $all_status$ahead_behind](fg:candy2 bg:mute))'
+format = '([ $all_status$ahead_behind](fg:candy2 bg:surface2))'
 
 [nodejs]
 symbol = ""
-style = "bg:mint"
-format = '[[ $symbol( $version) ](fg:bg bg:mint)]($style)'
+style = "fg:mint bg:surface2"
+format = '[[ $symbol( $version) ](fg:mint bg:surface2)]($style)'
 
 [bun]
 symbol = ""
-style = "bg:mint"
-format = '[[ $symbol( $version) ](fg:bg bg:mint)]($style)'
+style = "fg:mint bg:surface2"
+format = '[[ $symbol( $version) ](fg:mint bg:surface2)]($style)'
 detect_extensions = []
 detect_files = ['bunfig.toml', 'bun.lock', 'bun.lockb']
 detect_folders = []
 
 [c]
 symbol = " "
-style = "bg:mint"
-format = '[[ $symbol( $version) ](fg:bg bg:mint)]($style)'
+style = "fg:mint bg:surface2"
+format = '[[ $symbol( $version) ](fg:mint bg:surface2)]($style)'
 
 [rust]
 symbol = ""
-style = "bg:mint"
-format = '[[ $symbol( $version) ](fg:bg bg:mint)]($style)'
+style = "fg:mint bg:surface2"
+format = '[[ $symbol( $version) ](fg:mint bg:surface2)]($style)'
 
 [golang]
 symbol = ""
-style = "bg:mint"
-format = '[[ $symbol( $version) ](fg:bg bg:mint)]($style)'
+style = "fg:mint bg:surface2"
+format = '[[ $symbol( $version) ](fg:mint bg:surface2)]($style)'
 
 [php]
 symbol = ""
-style = "bg:mint"
-format = '[[ $symbol( $version) ](fg:bg bg:mint)]($style)'
+style = "fg:mint bg:surface2"
+format = '[[ $symbol( $version) ](fg:mint bg:surface2)]($style)'
 
 [java]
 symbol = " "
-style = "bg:mint"
-format = '[[ $symbol( $version) ](fg:bg bg:mint)]($style)'
+style = "fg:mint bg:surface2"
+format = '[[ $symbol( $version) ](fg:mint bg:surface2)]($style)'
 
 [kotlin]
 symbol = ""
-style = "bg:mint"
-format = '[[ $symbol( $version) ](fg:bg bg:mint)]($style)'
+style = "fg:mint bg:surface2"
+format = '[[ $symbol( $version) ](fg:mint bg:surface2)]($style)'
 
 [haskell]
 symbol = ""
-style = "bg:mint"
-format = '[[ $symbol( $version) ](fg:bg bg:mint)]($style)'
+style = "fg:mint bg:surface2"
+format = '[[ $symbol( $version) ](fg:mint bg:surface2)]($style)'
 
 [python]
 symbol = ""
-style = "bg:mint"
-format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:bg bg:mint)]($style)'
+style = "fg:mint bg:surface2"
+format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:mint bg:surface2)]($style)'
 
 [docker_context]
 symbol = ""
@@ -149,8 +144,8 @@ disabled = true
 [time]
 disabled = false
 time_format = "%R"
-style = "bg:mute"
-format = '[[  $time ](fg:bg bg:mute)]($style)'
+style = "fg:mute bg:surface"
+format = '[[  $time ](fg:mute bg:surface)]($style)'
 
 [line_break]
 disabled = true

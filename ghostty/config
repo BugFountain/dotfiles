@@ -1,5 +1,12 @@
 # Diego Ghostty — portable via ~/dotfiles
 # Docs: https://ghostty.org/docs/config
+#
+# Role map (locked palette only):
+#   bg (#07060b)       = canvas
+#   surface (#14121c)  = quiet chrome / unfocused fills
+#   candy (#ff2d6a)    = cursor / loud accent
+#   purple (#8b7cff)   = active split seam
+#   mute (#9a96a8)     = dim ANSI (6/14) only — never invent cyan
 
 # Locked cyberpunk palette (no Catppuccin / no cyan-lime-yellow)
 background = #07060b
@@ -37,12 +44,15 @@ font-feature = -calt
 
 # Comfortable grid + packing (artifact density vibe)
 window-padding-x = 12
-window-padding-y = 10
+# Less empty air under the titlebar (top, bottom)
+window-padding-y = 6,10
 window-padding-balance = true
 adjust-cell-height = 15%
 
 # macOS chrome
-macos-titlebar-style = tabs
+# Mac cannot set tab colors manually; transparent uses bg luminosity
+# so chrome blends with the terminal canvas (tabs still work).
+macos-titlebar-style = transparent
 macos-option-as-alt = true
 window-save-state = always
 window-inherit-working-directory = true
@@ -69,8 +79,8 @@ keybind = super+]=goto_split:next
 
 auto-update-channel = stable
 
-# UI chrome (tabs / splits / titlebar) — match cyberpunk bg so panes aren't "empty black"
-split-divider-color = #1c1828
+# UI chrome — purple active seam; surface quiet fill
+split-divider-color = #8b7cff
 unfocused-split-fill = #14121c
 unfocused-split-opacity = 0.92
 
