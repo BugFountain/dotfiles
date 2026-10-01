@@ -14,9 +14,9 @@ Installs Homebrew (if needed), Ghostty, Monocraft, Starship, antidote plugins, a
 
 | Layer | Choice |
 |-------|--------|
-| Terminal | Ghostty · Catppuccin Mocha · Monocraft |
+| Terminal | Ghostty · cyberpunk · Monocraft |
 | Shell | zsh (no Oh My Zsh / no Powerlevel10k) |
-| Prompt | Starship (Catppuccin Powerline) |
+| Prompt | Starship (cyberpunk powerline) |
 | Plugins | antidote → autosuggestions, syntax-highlighting, completions |
 | History | atuin + fzf |
 | Nav | zoxide |

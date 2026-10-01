@@ -27,7 +27,7 @@ compinit -C
 # Shared PATH + lazy runtimes (nvm/rbenv); mise activates below when present
 [[ -f "$DOTFILES/zsh/lean-path.zsh" ]] && source "$DOTFILES/zsh/lean-path.zsh"
 [[ -f "$DOTFILES/zsh/runtimes.zsh" ]] && source "$DOTFILES/zsh/runtimes.zsh"
-[[ -f "$DOTFILES/zsh/catppuccin-mocha.zsh" ]] && source "$DOTFILES/zsh/catppuccin-mocha.zsh"
+[[ -f "$DOTFILES/zsh/cyberpunk.zsh" ]] && source "$DOTFILES/zsh/cyberpunk.zsh"
 [[ -f "$DOTFILES/zsh/aliases.zsh" ]] && source "$DOTFILES/zsh/aliases.zsh"
 
 # mise (optional — sits beside nvm/rbenv until you migrate)
@@ -46,8 +46,8 @@ if ! _zsh_is_lean_shell; then
     antidote load "$DOTFILES/zsh/zsh_plugins.txt"
   fi
 
-  # Autosuggest style (Catppuccin muted)
-  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=${CTP_MUTED:-#737373}"
+  # Autosuggest style (cyberpunk mute)
+  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=${CTP_MUTED:-#9a96a8}"
 
   # History
   HISTFILE="${HOME}/.zsh_history"

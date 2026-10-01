@@ -1,21 +1,47 @@
 # Diego Ghostty — portable via ~/dotfiles
 # Docs: https://ghostty.org/docs/config
 
-# Theme matches existing Catppuccin Mocha zsh/iTerm look
-theme = Catppuccin Mocha
+# Locked cyberpunk palette (no Catppuccin / no cyan-lime-yellow)
+background = #07060b
+foreground = #f1efe8
+cursor-color = #ff2d6a
+cursor-text = #07060b
+selection-background = #1c1828
+selection-foreground = #f1efe8
 
-# Same face as iTerm (Nerd Font patch for p10k / glyphs)
+# ANSI 0-7
+palette = 0=#14121c
+palette = 1=#ff2d6a
+palette = 2=#7dffa8
+palette = 3=#ff5a9a
+palette = 4=#8b7cff
+palette = 5=#ff5a9a
+palette = 6=#9a96a8
+palette = 7=#f1efe8
+# ANSI 8-15 (bright)
+palette = 8=#1c1828
+palette = 9=#ff2d6a
+palette = 10=#7dffa8
+palette = 11=#ff5a9a
+palette = 12=#8b7cff
+palette = 13=#ff5a9a
+palette = 14=#9a96a8
+palette = 15=#f1efe8
+
+# Same face as artifact code stacks (Nerd Font patch for glyphs)
 font-family = Monocraft
 font-size = 15
 font-thicken = true
+font-feature = -liga
+font-feature = -calt
 
-# Comfortable grid + padding
+# Comfortable grid + packing (artifact density vibe)
 window-padding-x = 12
 window-padding-y = 10
 window-padding-balance = true
 adjust-cell-height = 15%
 
-# macOS chrome that feels native without fighting tabs
+# macOS chrome
 macos-titlebar-style = tabs
 macos-option-as-alt = true
 window-save-state = always
@@ -42,8 +68,4 @@ keybind = super+shift+d=new_split:down
 keybind = super+[=goto_split:previous
 keybind = super+]=goto_split:next
 
-# Quick terminal (bind yourself if you want a drop-down)
-# keybind = global:super+grave=toggle_quick_terminal
-
-# Auto-update on the stable channel
 auto-update-channel = stable
