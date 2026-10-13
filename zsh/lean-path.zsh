@@ -3,7 +3,11 @@
 
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.rbenv/bin:$PATH"
-export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+if [[ -d /opt/homebrew/opt/libpq/bin ]]; then
+  export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+elif [[ -d /usr/local/opt/libpq/bin ]]; then
+  export PATH="/usr/local/opt/libpq/bin:$PATH"
+fi
 
 export VAPI_INSTALL="$HOME/.vapi"
 export PATH="$VAPI_INSTALL/bin:$PATH"

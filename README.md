@@ -37,6 +37,8 @@ dotfiles/
   zsh/{zshenv,zprofile,zshrc,lean-path,runtimes,aliases}
 ```
 
+`zsh/aliases.local.zsh` is gitignored. The shell sources it when the file exists, for helpers that belong to one machine.
+
 ## After install
 
 - New Ghostty tab → Starship prompt

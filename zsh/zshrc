@@ -28,6 +28,7 @@ compinit -C
 [[ -f "$DOTFILES/zsh/runtimes.zsh" ]] && source "$DOTFILES/zsh/runtimes.zsh"
 [[ -f "$DOTFILES/zsh/cyberpunk.zsh" ]] && source "$DOTFILES/zsh/cyberpunk.zsh"
 [[ -f "$DOTFILES/zsh/aliases.zsh" ]] && source "$DOTFILES/zsh/aliases.zsh"
+[[ -f "$DOTFILES/zsh/aliases.local.zsh" ]] && source "$DOTFILES/zsh/aliases.local.zsh"
 
 # mise (optional — sits beside nvm/rbenv until you migrate)
 if command -v mise >/dev/null 2>&1; then
