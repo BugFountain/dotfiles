@@ -15,7 +15,6 @@ _zsh_is_lean_shell() {
   fi
   [[ -n "${COMPOSER_NO_INTERACTION:-}" ]] && return 0
   [[ -n "${CLAUDE_CODE_CHILD_SESSION:-}" ]] && return 0
-  [[ -n "${HERDR_ENV:-}" && "${HERDR_LEAN:-}" == 1 ]] && return 0
   return 1
 }
 
