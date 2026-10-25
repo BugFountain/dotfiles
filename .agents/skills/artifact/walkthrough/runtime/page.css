@@ -1,0 +1,360 @@
+/* Page: the scale every page sizes itself by, the controls page.js adds to a
+   hand-painted page, and the parts every page shows (kits/components.md).
+   Every color comes from the theme's tokens, so the page's own palette paints
+   them. */
+
+/* The scale. Both kinds of page inline this file, so a size, a space, a
+   radius or a tint means the same on each. A value off the scale rounds to
+   its nearest step. The palette is the theme's (walkthrough.css, or the
+   skeleton's :root in themes/cyberpunk.md). */
+:root {
+  /* Type, smallest first: fine print, caps labels, metadata, code, controls,
+     dense prose, prose, body, lede, a stop's title, a chapter's title. */
+  --fs-1: 10px; --fs-2: 10.5px; --fs-3: 11px; --fs-4: 11.5px; --fs-5: 12px; --fs-6: 12.5px;
+  --fs-7: 13px; --fs-8: 14px; --fs-9: 15px; --fs-10: 17px; --fs-11: 27px;
+  /* Space: every padding, margin and gap up to 28px. Past that a length is
+     layout, such as a column the stop number sits in. */
+  --sp-px: 1px; --sp-1: 2px; --sp-2: 4px; --sp-3: 6px; --sp-4: 8px; --sp-5: 10px;
+  --sp-6: 12px; --sp-7: 14px; --sp-8: 16px; --sp-9: 20px; --sp-10: 24px; --sp-11: 28px;
+  /* Radius: the theme is square. A keycap and inline code round a little; a dot is round. */
+  --radius-1: 2px; --radius-round: 50%;
+  /* Tracking: every caps label. */
+  --track-caps: 0.14em;
+  /* Mix: how much of a color a tint, a rule or a scrim takes in color-mix(). */
+  --mix-1: 7%;  /* an added row */
+  --mix-2: 9%;  /* a removed row, a changed word on an added row */
+  --mix-3: 12%; /* a changed word on a removed row, a lit band */
+  --mix-4: 16%; /* a selection, a lit answer, a new entity */
+  --mix-5: 24%; /* the landing wash, a lens's linked line */
+  --mix-6: 40%; /* a quiet border: a layer's tag, a hover */
+  --mix-7: 60%; /* a rule: a diff row's edge, the current stop's border, a light scrim */
+  --mix-8: 70%; /* a dotted underline, a heavy scrim, a lit edge */
+  --mix-9: 85%; /* a color a step toward another */
+  /* The landing wash: purple at a strength every text color still reads on. */
+  --wash: color-mix(in srgb, var(--purple) var(--mix-5), transparent);
+}
+
+/* The bar sticks to the top, so a landing clears it. */
+html.wtp [data-page] :is([id], [data-part]) { scroll-margin-top: 48px; }
+[data-page] :is(summary, [data-part]):focus { outline: none; }
+[data-page] :is(summary, [data-part]):focus-visible { outline: 1px solid var(--purple); outline-offset: 3px; }
+/* The current part: a keyline down its head's left edge, in the purple of
+   where the reader is, as the review page marks its current stop. */
+[data-page] [data-part].wtp-cur > summary, [data-page] [data-part].wtp-cur:not(details) { box-shadow: inset 2px 0 0 var(--purple); }
+/* On the current part the keyline is the focus ring, so the outline would mark it twice. */
+[data-page] [data-part].wtp-cur > summary:focus-visible, [data-page] [data-part].wtp-cur:not(details):focus-visible { outline: none; }
+/* A landing pulses the wash behind its words as an inset shadow, the review
+   page's way, so it never repaints the element's own background. */
+.wtp-lit { animation: wtp-pulse 1400ms var(--ease-out, ease-out); }
+@keyframes wtp-pulse { 0%, 35% { box-shadow: inset 0 0 0 100vmax var(--wash); } 100% { box-shadow: inset 0 0 0 100vmax transparent; } }
+[data-wtp-done] { margin-left: var(--sp-4); }
+.wtp-prog { font-size: var(--fs-3); color: var(--mute); font-variant-numeric: tabular-nums; }
+
+/* Icon: a symbol from the sheet (markup.js), in the color of its text, sized
+   by the text around it and set off from the words after it by one gap. A
+   control or a token with its own gap keeps only that gap. The sheet itself:
+   an inline SVG ignores `hidden`, and one with no display keeps its symbols,
+   so it takes no room instead. */
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.icon { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.22em; flex: none; margin-right: 0.3em; }
+.icon[hidden] { display: none; }
+:is(button, summary, .play, .tag) > .icon { margin-right: 0; }
+/* Tests wear the cyan tube and nothing else wears cyan (themes/cyberpunk.md). */
+.i-test { color: var(--cyan); }
+
+/* Tag: a small bordered token (markup.js, tag). A layer tag names its layer in
+   the layer's color. A proof tag tells its level by its border as well as its
+   color, so it reads with the color off: tested solid in the tests' cyan,
+   assembled dashed, recorded double. A count is a button that opens what it
+   counts, in the solid hairline: a dashed border means code only. */
+.tag { display: inline-flex; align-items: center; gap: var(--sp-3); font-size: var(--fs-3); line-height: 1; padding: var(--sp-2) var(--sp-4); border: 1px solid var(--hair); background: var(--surface); color: var(--ink); white-space: nowrap; text-decoration: none; }
+.tag .dot { width: 7px; height: 7px; background: var(--c, var(--mute)); flex: none; }
+.tag.layer { border-color: color-mix(in srgb, var(--c) var(--mix-6), transparent); }
+.tag.layer b { color: var(--c); font-weight: 700; }
+.tag.tested { color: var(--cyan); border-color: color-mix(in srgb, var(--cyan) var(--mix-6), transparent); }
+.tag.assembled { color: var(--mute); border-style: dashed; background: transparent; }
+.tag.recorded { border: 3px double color-mix(in srgb, var(--ink) var(--mix-7), transparent); padding: var(--sp-1) var(--sp-3); }
+.tag.count { font: inherit; font-size: var(--fs-3); color: var(--mute); background: transparent; cursor: pointer; }
+.tag.count:hover, .tag.count[aria-expanded="true"] { color: var(--ink); }
+a.tag:hover { border-color: color-mix(in srgb, var(--ink) var(--mix-6), transparent); }
+
+/* Button: every control, in one of four variants. Outline is a hairline box:
+   a tool, an action, a choice. Text has no box and less padding: a step in
+   the navigator, a quiet action. Solid is the one candy action. Icon-only is the
+   square around an icon alone. Pressed, checked or current is the active
+   state, so it takes purple (themes/cyberpunk.md); a review toggle that is on
+   takes the reviewed color instead. */
+.btn { display: inline-flex; align-items: center; gap: var(--sp-3); font: inherit; font-size: var(--fs-5); color: var(--mute); background: transparent; border: 1px solid transparent; padding: var(--sp-3) var(--sp-4); cursor: pointer; white-space: nowrap; text-decoration: none; touch-action: manipulation; }
+.btn:hover { color: var(--ink); }
+.btn.outline { border-color: var(--hair); }
+.btn.outline:hover { border-color: color-mix(in srgb, var(--ink) var(--mix-6), transparent); }
+.btn.solid { background: var(--candy); border-color: var(--candy); color: var(--bg); font-weight: 700; }
+.btn.text { padding: var(--sp-2) var(--sp-3); }
+.btn.icon-only { padding: var(--sp-3); }
+.btn:is([aria-pressed="true"], [aria-checked="true"], [aria-current="page"]) { color: var(--ink); }
+.btn:not(.text):is([aria-pressed="true"], [aria-checked="true"], [aria-current="page"]) { border-color: var(--purple); }
+.btn[aria-pressed="true"]:is([data-act="review"], [data-go="mark"]) { color: var(--candy-2); }
+.btn.outline[aria-pressed="true"][data-act="review"] { border-color: var(--candy-2); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn .count { font-variant-numeric: tabular-nums; }
+
+/* Disclosure: a fold that opens in place, led by one caret that turns as it
+   opens. A <details class="disclose"> leads its summary with icon('caret'); a
+   button that opens rows, such as a diff's fold or its header caret, holds the
+   same caret and says its state in aria-expanded. */
+.disclose > summary { list-style: none; cursor: pointer; }
+.disclose > summary::-webkit-details-marker { display: none; }
+.disclose > summary:is(:hover, :focus-visible) { color: var(--ink); }
+:is(.disclose > summary, [aria-expanded]) > .i-caret { width: 1em; height: 1em; vertical-align: -0.12em; margin-right: 0.3em; color: var(--mute); transition: transform 160ms var(--ease-out, ease-out); }
+:is(.disclose[open] > summary, [aria-expanded="true"]) > .i-caret { transform: rotate(90deg); }
+[aria-expanded] > .i-caret:only-child { margin-right: 0; }
+
+/* Label: caps text that names what follows. Every caps label takes one
+   tracking. A kicker heads a title in bold candy-2; a section mark sits
+   between two hairlines; a sub-heading is mute with a hairline after it; a
+   plain label (.caps) takes its color from where it sits, and so does the
+   lead word of a peek or a toast. */
+.caps, .kicker, .mark, .sub, :where(.tip:not(.lens), .toast) b { text-transform: uppercase; letter-spacing: var(--track-caps); }
+.caps, :where(.tip:not(.lens), .toast) b { font-size: var(--fs-2); font-weight: 400; }
+.kicker { font-size: var(--fs-3); font-weight: 700; color: var(--candy-2); }
+.mark { display: flex; align-items: baseline; gap: var(--sp-5); font-size: var(--fs-3); font-weight: 700; color: var(--candy-2); margin: 0; padding: var(--sp-10) 0 var(--sp-5); }
+.mark::before, .mark::after { content: ""; flex: 1; border-top: 1px solid var(--hair); transform: translateY(-3px); }
+.mark em { font-style: normal; letter-spacing: 0; text-transform: none; font-weight: 400; color: var(--mute); }
+.sub { font-size: var(--fs-2); font-weight: 400; color: var(--mute); margin: var(--sp-8) 0 var(--sp-3); display: flex; gap: var(--sp-4); align-items: center; }
+.sub::after { content: ""; flex: 1; border-top: 1px solid var(--hair-2); }
+
+/* Code: every piece of code in Monocraft with ligatures off and one set of
+   syntax colors (themes/cyberpunk.md#code). A diff (.code rows, walkthrough.css)
+   and its excerpt, a call site's lens (.lens-code), a plain block (.code-block:
+   a payload's shape, a reference picture, a hand-painted page's stack), and
+   inline code (.inline-code) each take the colors below. A block keeps its
+   lines as written and scrolls sideways; `.plus` and `.minus` mark a drawn
+   diff's lines in the change hues. */
+.inline-code, .code-block { font-family: var(--code, ui-monospace, monospace); font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+.inline-code { font-size: var(--fs-6); background: var(--surface-2); border-radius: var(--radius-1); padding: 0.05em 0.3em; color: var(--ink); overflow-wrap: anywhere; }
+.code-block { margin: 0; padding: var(--sp-4) var(--sp-5); font-size: var(--fs-4); line-height: 1.45; white-space: pre; overflow-x: auto; overflow-wrap: normal; background: var(--surface); color: var(--ink); }
+:is(.yk, .ys, .yn, .yt, .yc, .yx) { font-style: normal; }
+.yk { color: var(--syn-kw); }
+.ys { color: var(--syn-str); }
+.yn { color: var(--syn-num); }
+.yt { color: var(--syn-type); }
+.yc { color: var(--syn-com); }
+.code-block .plus { color: var(--mint); }
+.code-block .minus { color: var(--candy); }
+
+/* Note: a paragraph set apart from the prose. A rule note (.callout) is a
+   left rule on the surface: a callout, a slow down, the untested branches, a
+   chapter's entry. A box note (.callout.box) is a hairline box: a flag, a
+   decision. Severity colors the rule or the edge and the note's head: warning
+   candy, important and plain candy-2, info mute; a dropped note fades. A loud note is the page's one solid candy block. */
+.callout { margin: var(--sp-4) 0; padding: var(--sp-4) var(--sp-6); background: var(--surface); border-left: 2px solid var(--candy-2); }
+.callout.box { margin: var(--sp-5) 0; border: 1px solid var(--hair); }
+.callout > b.caps:first-child { display: block; margin-bottom: var(--sp-2); }
+.callout > :is(b.caps:first-child, .ft) { color: var(--candy-2); }
+.callout.warning:not(.box) { border-left-color: var(--candy); }
+.callout.box.warning { border-color: var(--candy); }
+.callout.box.important { border-color: color-mix(in srgb, var(--candy-2) var(--mix-7), transparent); }
+.callout.warning > :is(b.caps:first-child, .ft) { color: var(--candy); }
+.callout.info:not(.box) { border-left-color: var(--mute); }
+.callout:is(.info, .dropped) > :is(b.caps:first-child, .ft) { color: var(--mute); }
+.callout.dropped { opacity: 0.55; }
+.callout.loud { background: var(--candy); color: var(--bg); border: 0; padding: var(--sp-7) var(--sp-8); }
+
+/* Panel: a surface with a hairline. A plain panel sits on the surface: a
+   diff, a scene, a lane, a card, the flow's stage. A ground panel sits on the
+   page's ground, for one that holds surfaced panels, as a stop holds its
+   diffs. A split panel frames two panes side by side, one over the other on a
+   phone: a before and after, the theme's NOW and WANT. The current panel is
+   where the reader is, so its edge takes purple. */
+.panel { border: 1px solid var(--hair); background: var(--surface); }
+.panel.ground { background: var(--bg); }
+.panel.split { display: grid; grid-template-columns: 1fr 1fr; background: transparent; }
+.panel.split > * { min-width: 0; padding: var(--sp-5) var(--sp-6); }
+.panel.split > * + * { border-left: 1px solid var(--hair); }
+.panel.current { border-color: color-mix(in srgb, var(--purple) var(--mix-7), transparent); }
+@media (max-width: 560px) {
+  .panel.split { grid-template-columns: 1fr; }
+  .panel.split > * + * { border-left: 0; border-top: 1px solid var(--hair); }
+}
+
+/* Layer: what opens over the page, on both kinds of page, and closes the
+   way layers.js closes it. A sheet (.overlay > .sheet) sits over a scrim and
+   takes focus; a peek (.tip) shows what a term or a link holds, and a lens
+   (.tip.lens) the lines around a call site; a toast says what an act did; a
+   pill (.backpill, .pickpill) holds the one control a moment needs. The
+   rail's drawer at phone width is the review page's own layer. */
+.tip { position: fixed; z-index: 80; width: max-content; max-width: min(300px, calc(100vw - 16px)); padding: var(--sp-5) var(--sp-6); border: 1px solid var(--hair); background: var(--surface-2); color: var(--ink); font: 400 var(--fs-5)/1.5 var(--ui, ui-monospace, monospace); pointer-events: none; }
+.tip b { display: block; color: var(--candy-2); margin-bottom: var(--sp-2); }
+.tip.lens { max-width: min(680px, calc(100vw - 16px)); padding: var(--sp-4) 0 var(--sp-3); background: var(--surface); }
+.tip.lens b { padding: 0 var(--sp-6) var(--sp-3); margin: 0; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--mute); overflow-wrap: anywhere; }
+.overlay { position: fixed; inset: 0; z-index: 60; background: color-mix(in srgb, var(--bg) var(--mix-8), transparent); display: none; place-items: center; padding: var(--sp-8); overscroll-behavior: contain; }
+.overlay.show { display: grid; }
+.sheet { width: min(680px, 100%); max-height: 86vh; overflow: auto; overscroll-behavior: contain; background: var(--surface); border: 1px solid var(--hair); padding: var(--sp-9) var(--sp-9); animation: sheet-in 240ms var(--ease-out, ease-out) both; }
+.sheet:focus { outline: none; }
+@keyframes sheet-in { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
+.sheet h2 { margin: 0 0 var(--sp-6); font-size: var(--fs-9); }
+.backpill { position: fixed; left: calc(var(--rail, 0px) + 16px); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 36; max-width: min(440px, calc(100vw - var(--rail, 0px) - 340px)); display: grid; gap: var(--sp-2); text-align: left; background: var(--surface-2); border: 1px solid var(--purple); color: var(--ink); padding: var(--sp-4) var(--sp-6); font-size: var(--fs-5); cursor: pointer; }
+.backpill[hidden] { display: none; }
+.backpill .q { color: var(--mute); font-size: var(--fs-4); }
+.toast { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(64px + env(safe-area-inset-bottom, 0px)); z-index: 40; max-width: min(360px, calc(100vw - 32px)); background: var(--surface-2); border: 1px solid var(--candy-2); padding: var(--sp-4) var(--sp-6); font-size: var(--fs-5); opacity: 0; pointer-events: none; transform: translateY(6px); transition: opacity 220ms var(--ease-io, ease), transform 220ms var(--ease-out, ease-out); }
+.toast.show { opacity: 1; transform: none; }
+.toast b { color: var(--candy-2); margin-right: var(--sp-4); }
+.pickpill { position: fixed; left: 50%; transform: translateX(-50%); top: calc(var(--hdr, 44px) + 10px + env(safe-area-inset-top, 0px)); z-index: 36; margin: 0; max-width: calc(100vw - 32px); background: var(--surface-2); border: 1px solid var(--purple); color: var(--ink); padding: var(--sp-4) var(--sp-6); font-size: var(--fs-5); text-align: center; }
+.pickpill[hidden] { display: none; }
+@media (max-width: 860px) {
+  .backpill { left: 16px; right: 16px; max-width: none; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* Link: an in-page link that names its target, in the words of the target:
+   a stop's number and title (.to-stop), a glossary term (.term-ref, and a
+   hand-painted page's [data-term]), a call site or a receipt that opens its
+   lens (.loc), a file's tests (.to-tests), a reference entry (.to-ref), a
+   brief item (.to-brief) and the brief's links, the files the walk skips
+   (.skip-to), a payload's shape (.io-l). One underline:
+   dotted in mute at rest, solid candy-2 under ink on hover or focus. */
+:is(.term-ref, [data-page] [data-term], .loc, .to-tests, .to-ref, .to-brief, .brief-terms a, .brief-links a, .skip-to, .io-l, .to-stop .tt, .peekable, .cav-mark, .hop a .tt, .layers > li > .tt > a, .hunk-meta a.file-link, .hunk-meta a.excerpt-of) { text-decoration: underline dotted color-mix(in srgb, var(--mute) var(--mix-8), transparent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+:is(.term-ref, [data-page] [data-term], .loc, .to-tests, .to-ref, .to-brief, .brief-terms a, .brief-links a, .skip-to, .peekable, .cav-mark, .layers > li > .tt > a, .hunk-meta a.file-link, .hunk-meta a.excerpt-of):is(:hover, :focus-visible), :is(.to-stop, .payload summary, .hop a):is(:hover, :focus-visible) :is(.tt, .io-l), [data-peek]:is(:hover, :focus-visible) > .peekable { color: var(--ink); text-decoration-style: solid; text-decoration-color: var(--candy-2); }
+
+/* Mark: the severity of a unit (markup.js, mark). It reads by fill as well as
+   color: warning is solid, important is outlined, info is quiet. */
+.sev { display: inline-flex; align-items: center; gap: var(--sp-2); max-width: 100%; font-size: var(--fs-2); line-height: 1.2; letter-spacing: var(--track-caps); text-transform: uppercase; padding: var(--sp-1) var(--sp-3); border: 1px solid var(--hair); color: var(--mute); overflow-wrap: anywhere; }
+.sev.warning { background: var(--candy); border-color: var(--candy); color: var(--bg); font-weight: 700; }
+.sev.important { border-color: var(--candy-2); color: var(--candy-2); }
+.sev.info { border-color: transparent; padding-inline: 0; }
+.sev > .icon { margin-right: 0; }
+
+/* Keycaps: flat chips sized by the text around them; a press inverts them.
+   Both kinds of page inline this file, so a keycap looks the same on each. */
+.keys { display: inline-flex; align-items: baseline; gap: 0.25em; white-space: nowrap; }
+.key {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 1.5em; padding: 0.1em 0.4em; margin-inline: 0.1em;
+  font: 500 max(var(--fs-1), 0.78em)/1.25 var(--ui, ui-monospace, monospace); letter-spacing: 0; text-transform: none; white-space: nowrap;
+  color: var(--ink); background: var(--surface-2); border: 1px solid var(--hair); border-radius: var(--radius-1);
+  vertical-align: 0.05em; user-select: none;
+  transition: background-color 90ms var(--ease-io, ease), border-color 90ms var(--ease-io, ease), color 90ms var(--ease-io, ease);
+}
+.keys .key { margin-inline: 0; }
+.key[data-pressed="true"] { background: var(--candy-2); border-color: var(--candy-2); color: var(--bg); }
+
+/* The bar: the review page's header tools. */
+.wtp-bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  display: flex; justify-content: flex-end; padding-block: var(--sp-3); margin-bottom: var(--sp-2);
+  background: var(--bg); border-bottom: 1px solid var(--hair);
+}
+.wtp-tools { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sp-1) var(--sp-3); }
+.wtp-tools .count { color: var(--ink); }
+
+/* Navigator: where the reader is and the step controls (markup.js,
+   navigator), bottom right and outside the reading column on both kinds of
+   page. Ticks mark the parts at the reader's level: reviewed filled in
+   candy-2, the current one ringed in purple. At any width a long place wraps
+   rather than push the controls off screen. A phone keeps the arrows and the
+   place and spans the width; the letters' keycaps and the ticks, too small to
+   tap, leave. */
+.navi {
+  position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 35; max-width: calc(100vw - 32px);
+  display: flex; align-items: center; gap: var(--sp-1); padding: var(--sp-2); background: var(--surface-2); border: 1px solid var(--hair);
+}
+/* The navigator's buttons read in ink, and a hover lifts them to the surface. */
+.navi .nb { color: var(--ink); }
+.navi .nb:hover { background: var(--surface); }
+.navi .nb.rv { border-left: 1px solid var(--hair); padding-left: var(--sp-5); margin-left: var(--sp-2); }
+.navi .where { font-size: var(--fs-5); color: var(--mute); padding: var(--sp-2) var(--sp-4); text-decoration: none; overflow-wrap: anywhere; text-align: center; font-variant-numeric: tabular-nums; }
+.navi .where b { color: var(--ink); font-weight: 600; }
+.navi .where:hover { color: var(--ink); }
+.navi .nb.edge { color: var(--mute); }
+.navi .nb.edge:hover { color: var(--ink); }
+.navi .nb[hidden] { display: none; }
+/* On the flow the arrows step hops, and j and k still leave it. */
+.navi.flowing .ticks { display: none; }
+.navi .spot { display: grid; justify-items: center; align-content: center; gap: var(--sp-px); flex: 1 1 auto; min-width: 0; }
+.navi .where { padding: var(--sp-1) var(--sp-4); }
+/* Each tick's hit area is larger than its mark; the mark is its ::before. */
+.navi .ticks { display: flex; flex-wrap: wrap; justify-content: center; max-width: 300px; padding: 0 var(--sp-2) var(--sp-1); }
+.navi .ticks[hidden] { display: none; }
+.navi .tk { display: grid; place-items: center; width: 11px; height: 12px; }
+.navi .tk::before { content: ""; width: 7px; height: 7px; box-sizing: border-box; border: 1px solid color-mix(in srgb, var(--mute) var(--mix-8), transparent); }
+.navi .tk.br::before { width: 5px; height: 5px; }
+.navi .tk.done::before { background: var(--candy-2); border-color: var(--candy-2); }
+.navi .tk.on::before { outline: 1px solid var(--purple); outline-offset: 1px; }
+.navi .tk:hover::before { border-color: var(--ink); }
+
+@media (max-width: 860px) {
+  .navi { left: 16px; right: 16px; justify-content: space-between; }
+}
+@media (max-width: 560px) {
+  .navi .ticks { display: none; }
+  .navi .nb.rv span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .navi .nb.rv[aria-pressed="true"] { color: var(--candy-2); }
+}
+
+
+
+[data-page] [data-term] { cursor: help; }
+
+.wtp-keylist { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-4); }
+.wtp-keylist li { display: grid; grid-template-columns: 5.5em 1fr; gap: var(--sp-5); align-items: baseline; font-size: var(--fs-6); }
+.wtp-resets { display: flex; flex-wrap: wrap; gap: var(--sp-4); margin-top: var(--sp-7); }
+.wtp-filter { width: 100%; font: inherit; font-size: var(--fs-6); color: var(--ink); background: var(--surface-2); border: 1px solid var(--hair); padding: var(--sp-3) var(--sp-4); margin-bottom: var(--sp-5); }
+.wtp-terms { margin: 0; display: grid; gap: var(--sp-1) 0; }
+.wtp-terms dt { font-weight: 600; margin-top: var(--sp-4); }
+.wtp-terms dd { margin: 0; color: var(--mute); font-size: var(--fs-6); }
+
+/* Comment mode: a dashed ring shows what the next click comments on. */
+html.wtp-commenting [data-page] { cursor: crosshair; }
+[data-wtp-ring] { outline: 1px dashed var(--purple); outline-offset: 2px; }
+
+/* The landing wash only fades a color in place, so it keeps its time. */
+
+/* Chrome is not selectable; content is. A control is chrome by being one,
+   and so is each shared chrome root CHROME names in markup.js: a long press
+   on it opens no selection or callout on a phone, and a drag across a card
+   on a desktop picks up the words, not the controls. */
+:is(button, summary, kbd, select, nav, [role="tab"], [role="tablist"], [role="toolbar"], .key, .keys, .key-hint, .icon, .tag, .sev, .badges, .kicker, .btn, .tabs, .tab, .toast, .backpill, .pickpill, .navi, .meter, .gauge, .ring, .legend, .wtp-bar, .wtp-tools, .wtp-prog, .wtp-done, .cav-mark, .cav-n, .cav-k) { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
+/* Every disclosure opens and closes by its height, on every page. A browser
+   that animates to `auto` does it here; disclose.js animates the rest. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (interpolate-size: allow-keywords) {
+    details { interpolate-size: allow-keywords; }
+    details::details-content { block-size: 0; overflow-y: clip; transition: block-size 220ms var(--ease-io, ease), content-visibility 220ms allow-discrete; }
+    details[open]::details-content { block-size: auto; }
+    /* A place the trail puts back lands whole (trail.js). */
+    .snap details::details-content { transition: none; }
+  }
+}
+
+/* Caveats, on both kinds of page: a decision the page describes as knowingly
+   imperfect, or an item it marks open. The card:
+     <article class="caveat" id="cav-<id>"><h4 class="cav-title"><span class="cav-n">…caveat N</span>title</h4>
+       <dl class="cav-rows"><dt>did</dt><dd>…</dd> why now, cost, fix, planned</dl>
+       <p class="cav-where"><span class="cav-k">where</span>links</p></article>
+   A marker is a link with the caveat icon, `<a class="cav-mark" href="#cav-<id>">`,
+   underlined like every link; a dashed border means code only elsewhere. */
+.cav-mark { position: relative; display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-3); line-height: 1.2; letter-spacing: 0.04em; color: var(--ink); white-space: nowrap; }
+.icon.i-caveat { width: 12px; height: 12px; margin-right: 0; color: var(--candy-2); }
+.caveats { display: grid; gap: var(--sp-6); margin: var(--sp-2) 0; }
+.caveat { border: 1px solid var(--hair); border-left: 2px solid var(--candy-2); background: var(--surface); padding: var(--sp-6) var(--sp-7); }
+.cav-title { margin: 0 0 var(--sp-4); font-size: 14px; line-height: 1.35; font-weight: 700; }
+.cav-n { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-2); font-size: 10.5px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--candy-2); }
+.cav-rows { display: grid; grid-template-columns: 8ch minmax(0, 1fr); gap: var(--sp-2) var(--sp-6); margin: 0; font-size: 13px; line-height: 1.5; }
+.cav-rows dt { color: var(--mute); }
+.cav-rows dd { margin: 0; }
+.cav-where { margin: var(--sp-5) 0 0; font-size: 12px; color: var(--mute); }
+.cav-k { margin-right: var(--sp-4); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; }
+.cav-link { margin-top: var(--sp-5); }
+/* The compact card a caveat's peek and touch sheet show: the card's own
+   parts, closer set. */
+.caveat.compact { border: 0; background: none; padding: 0; }
+.caveat.compact .cav-title { margin-bottom: var(--sp-3); font-size: 12.5px; }
+.caveat.compact .cav-rows { grid-template-columns: 4ch minmax(0, 1fr); gap: var(--sp-2) var(--sp-5); font-size: 12px; }
+.cav-plan { color: var(--mute); }
+@media (max-width: 560px) {
+  .cav-rows { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .cav-rows dd { margin-bottom: var(--sp-3); }
+}
+@media (hover: none) and (pointer: coarse) {
+  .cav-mark::after { content: ""; position: absolute; inset: -12px -2px; }
+}

@@ -33,9 +33,12 @@ dotfiles/
   Brewfile
   starship.toml
   ghostty/config
-  fonts/Monocraft-…
+  fonts/Monocraft-…          # OFL.txt travels with the font
   zsh/{zshenv,zprofile,zshrc,lean-path,runtimes,aliases}
+  .agents/skills/artifact    # .claude/skills → the same tree
 ```
+
+`install.sh` links that skill into `~/.agents/skills/artifact` and `~/.claude/skills/artifact`.
 
 `zsh/aliases.local.zsh` is gitignored. The shell sources it when the file exists, for helpers that belong to one machine.
 

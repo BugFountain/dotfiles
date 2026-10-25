@@ -80,6 +80,17 @@ link_shell() {
   echo "✓ ~/.zshrc ~/.zshenv ~/.zprofile → $DOTFILES/zsh/"
 }
 
+link_agent_skills() {
+  local src="$DOTFILES/.agents/skills/artifact"
+  [[ -d "$src" ]] || return 0
+  local dest
+  for dest in "$HOME/.agents/skills" "$HOME/.claude/skills"; do
+    mkdir -p "$dest"
+    ln -sfn "$src" "$dest/artifact"
+  done
+  echo "✓ artifact skill → ~/.agents/skills and ~/.claude/skills"
+}
+
 link_starship_ghostty() {
   mkdir -p "$CONFIG_HOME"
   backup_file "$CONFIG_HOME/starship.toml"
@@ -123,6 +134,7 @@ main() {
   install_font
   link_shell
   link_starship_ghostty
+  link_agent_skills
   export DOTFILES
   prime_antidote
   git_delta_hint

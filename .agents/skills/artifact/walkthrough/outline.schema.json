@@ -1,0 +1,1508 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:artifact:walkthrough:outline.v1",
+  "title": "PR review walkthrough outline",
+  "description": "Data for one review page. Agents write it; check.mjs verifies it against the real diff; render.mjs draws it. Evidence is cited by hunk id from diff-index.mjs, never retyped.",
+  "type": "object",
+  "required": [
+    "version",
+    "kind",
+    "title",
+    "repo",
+    "intro",
+    "layers",
+    "spine",
+    "chapters"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "kind": {
+      "enum": [
+        "stack",
+        "pr"
+      ],
+      "description": "stack: one chapter per PR layer. pr: one chapter per flow of a single PR."
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 90
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Two to four words for the browser tab and the gallery card. Defaults to title."
+    },
+    "repo": {
+      "type": "string",
+      "pattern": "^[\\w.-]+/[\\w.-]+$"
+    },
+    "generatedAt": {
+      "type": "string"
+    },
+    "intro": {
+      "$ref": "#/$defs/intro"
+    },
+    "brief": {
+      "$ref": "#/$defs/brief"
+    },
+    "caveats": {
+      "type": "array",
+      "description": "Every non-obvious or knowingly imperfect decision in the change, each with why it stands for now, what it costs, the fix and where that fix is planned. The page lists them in the reference and marks every stop and hop each one names.",
+      "items": {
+        "$ref": "#/$defs/caveat"
+      }
+    },
+    "layers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/layer"
+      }
+    },
+    "spine": {
+      "$ref": "#/$defs/spine"
+    },
+    "chapters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/chapter"
+      }
+    },
+    "biographies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/biography"
+      }
+    },
+    "glossary": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/term"
+      }
+    },
+    "reference": {
+      "type": "array",
+      "description": "What a reader looks up while walking: a model, a table of rules, a picture, questions and their answers. An entry with a model or answers draws first in the opening, under `what changes`; the release plan follows the layers; the rest draw under `reference`. The stage links an entry from each hop it names.",
+      "items": {
+        "$ref": "#/$defs/reference"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,63}$"
+    },
+    "prose": {
+      "type": "string",
+      "description": "Markdown-lite: `code`, **bold**, *em*, [text](url), '- ' bullets, '> [!IMPORTANT] ' / '> [!WARNING] ' / '> [!NOTE] ' callouts."
+    },
+    "sentence": {
+      "type": "string",
+      "maxLength": 240
+    },
+    "severity": {
+      "enum": [
+        "info",
+        "important",
+        "warning"
+      ]
+    },
+    "via": {
+      "enum": [
+        "call",
+        "http",
+        "kafka",
+        "hatchet",
+        "db",
+        "timer",
+        "browser",
+        "webhook",
+        "cli",
+        "queue",
+        "mcp",
+        "deploy",
+        "config",
+        "test",
+        "other"
+      ],
+      "description": "How control reaches the frame: an in-process call, or a hop across a boundary."
+    },
+    "intro": {
+      "type": "object",
+      "required": [
+        "intent",
+        "before",
+        "after",
+        "takeaways"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/prose"
+        },
+        "before": {
+          "$ref": "#/$defs/sentence"
+        },
+        "after": {
+          "$ref": "#/$defs/sentence"
+        },
+        "takeaways": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": [
+              "text",
+              "severity"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "$ref": "#/$defs/sentence"
+              },
+              "severity": {
+                "$ref": "#/$defs/severity"
+              }
+            }
+          }
+        }
+      }
+    },
+    "layer": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "base",
+        "head"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "pr": {
+          "type": "integer"
+        },
+        "url": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "ticket": {
+          "type": "string"
+        },
+        "ticketUrl": {
+          "type": "string"
+        },
+        "baseRef": {
+          "type": "string"
+        },
+        "headRef": {
+          "type": "string"
+        },
+        "base": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{7,40}$"
+        },
+        "head": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{7,40}$"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "One sentence the layer list shows under the PR's gist: what the PR holds and whether it splits."
+        },
+        "order": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "One sentence the layer list shows under the PR's gist: why the PR sits at this point in the stack, naming what it uses from the layers below or what a layer above needs from it."
+        }
+      }
+    },
+    "spine": {
+      "type": "object",
+      "required": [
+        "lanes",
+        "hops"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "lanes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "title": {
+                "type": "string"
+              },
+              "gist": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "hops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/hop"
+          }
+        },
+        "acts": {
+          "type": "array",
+          "description": "The whole flow told as a story: chapters in reading order, each naming its hops in order. Every hop sits in exactly one act.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "hops"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 60
+              },
+              "lane": {
+                "$ref": "#/$defs/id"
+              },
+              "hops": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/id"
+                }
+              }
+            }
+          }
+        },
+        "systems": {
+          "type": "array",
+          "description": "The systems the flow's components live in, in the order the act diagram bands their heads: an app, a queue, a database, an engine, the outside world, CI. Every hop endpoint belongs to exactly one.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "nodes"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 24
+              },
+              "nodes": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "narration": {
+          "type": "object",
+          "description": "The whole flow read aloud: the line before the first act and the line after the last. Each act's title, each stack hop's story line and one short line per run of hops from before the stack make up the rest.",
+          "additionalProperties": false,
+          "required": [
+            "intro",
+            "outro"
+          ],
+          "properties": {
+            "intro": {
+              "type": "string",
+              "maxLength": 400
+            },
+            "outro": {
+              "type": "string",
+              "maxLength": 300
+            }
+          }
+        }
+      }
+    },
+    "hop": {
+      "type": "object",
+      "required": [
+        "id",
+        "lane",
+        "from",
+        "to",
+        "label",
+        "via",
+        "layer",
+        "proof"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "lane": {
+          "$ref": "#/$defs/id"
+        },
+        "from": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "to": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "What travels: a payload, a command, a row."
+        },
+        "via": {
+          "$ref": "#/$defs/via"
+        },
+        "layer": {
+          "$ref": "#/$defs/id",
+          "description": "The layer that introduced the hop, or `base` for a hop the code made before the first layer, which the page shows gray, in passing."
+        },
+        "stop": {
+          "$ref": "#/$defs/id",
+          "description": "The stop that explains this hop."
+        },
+        "proof": {
+          "enum": [
+            "tested",
+            "assembled",
+            "recorded"
+          ],
+          "description": "tested: a test reaches it. assembled: the code exists, no test or run reaches it. recorded: a recorded run shows it."
+        },
+        "note": {
+          "type": "string"
+        },
+        "story": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "One sentence that tells this hop as the next beat of the story, so the hops read in a row."
+        },
+        "sub": {
+          "type": "string",
+          "maxLength": 160,
+          "description": "The stage's subtitle: the code that does this hop, or why it matters. It never repeats the story line. Without it the stage shows the linked stop's gist, so two hops on one stop need one of their own."
+        }
+      }
+    },
+    "chapter": {
+      "type": "object",
+      "required": [
+        "id",
+        "layer",
+        "title",
+        "gist",
+        "intent",
+        "entry",
+        "stops",
+        "housekeeping",
+        "everythingElse",
+        "qa",
+        "selfCheck",
+        "claims"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "layer": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 70
+        },
+        "gist": {
+          "$ref": "#/$defs/sentence"
+        },
+        "intent": {
+          "$ref": "#/$defs/prose"
+        },
+        "before": {
+          "$ref": "#/$defs/sentence"
+        },
+        "after": {
+          "$ref": "#/$defs/sentence"
+        },
+        "entry": {
+          "$ref": "#/$defs/sentence",
+          "description": "What starts this chapter's flow."
+        },
+        "takeaways": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": [
+              "text",
+              "severity"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "$ref": "#/$defs/sentence"
+              },
+              "severity": {
+                "$ref": "#/$defs/severity"
+              }
+            }
+          }
+        },
+        "stops": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/stop"
+          }
+        },
+        "housekeeping": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fileHome"
+          },
+          "description": "Glue last: wiring, config, generated files. A file here owns all its hunks."
+        },
+        "everythingElse": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fileHome"
+          },
+          "description": "Changed files no stop or housekeeping row explains. Rare."
+        },
+        "qa": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "question",
+              "stops"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "question": {
+                "$ref": "#/$defs/sentence"
+              },
+              "stops": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/id"
+                }
+              },
+              "look": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "stop",
+                    "quote"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "stop": {
+                      "$ref": "#/$defs/id"
+                    },
+                    "quote": {
+                      "type": "string",
+                      "minLength": 12,
+                      "maxLength": 240
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "selfCheck": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "question",
+              "answer",
+              "stop"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "question": {
+                "$ref": "#/$defs/sentence"
+              },
+              "answer": {
+                "$ref": "#/$defs/prose"
+              },
+              "stop": {
+                "$ref": "#/$defs/id"
+              },
+              "quote": {
+                "type": "string",
+                "minLength": 12,
+                "maxLength": 240
+              }
+            }
+          }
+        },
+        "claims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claim"
+          }
+        }
+      }
+    },
+    "fileHome": {
+      "type": "object",
+      "required": [
+        "file",
+        "label"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 160
+        }
+      }
+    },
+    "stop": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "gist",
+        "kind",
+        "frame",
+        "wake",
+        "stack",
+        "detail",
+        "anchors",
+        "transition"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 70
+        },
+        "gist": {
+          "$ref": "#/$defs/sentence",
+          "description": "One sentence a reader who reads nothing else understands."
+        },
+        "kind": {
+          "enum": [
+            "core",
+            "consequence",
+            "support"
+          ]
+        },
+        "frame": {
+          "type": "object",
+          "required": [
+            "file",
+            "symbol",
+            "line"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "file": {
+              "type": "string"
+            },
+            "symbol": {
+              "type": "string",
+              "description": "The function, method or handler that wakes, e.g. `InboxRepository.record`."
+            },
+            "line": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Head-side line of the symbol's definition."
+            }
+          }
+        },
+        "wake": {
+          "type": "object",
+          "required": [
+            "via"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "via": {
+              "$ref": "#/$defs/via"
+            },
+            "caller": {
+              "type": "object",
+              "required": [
+                "symbol"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "symbol": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Head-side line of the call site, or of the producer for a cross-boundary hop."
+                }
+              }
+            },
+            "note": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        },
+        "stack": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Call stack at this stop, outermost first; the last frame is this stop's frame.",
+          "items": {
+            "type": "object",
+            "required": [
+              "symbol",
+              "changed"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "symbol": {
+                "type": "string"
+              },
+              "file": {
+                "type": "string"
+              },
+              "layer": {
+                "type": "string",
+                "description": "Layer that introduced the frame, or 'base' for code that predates the change."
+              },
+              "changed": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "in": {
+              "$ref": "#/$defs/shape"
+            },
+            "out": {
+              "$ref": "#/$defs/shape"
+            }
+          }
+        },
+        "detail": {
+          "$ref": "#/$defs/prose",
+          "description": "Why this shape, the decision taken and its implication. 2-6 sentences."
+        },
+        "anchors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/anchor"
+          }
+        },
+        "proof": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "role"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "hunk": {
+                "type": "string"
+              },
+              "file": {
+                "type": "string",
+                "description": "File-level home: owns every hunk of this file."
+              },
+              "role": {
+                "enum": [
+                  "home",
+                  "excerpt"
+                ]
+              },
+              "focus": {
+                "$ref": "#/$defs/range"
+              },
+              "name": {
+                "type": "string",
+                "description": "The test example name as written in the file."
+              },
+              "covers": {
+                "type": "string",
+                "description": "The branch this example reaches."
+              }
+            }
+          }
+        },
+        "untested": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Branches of this stop no test reaches."
+        },
+        "margin": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "kind",
+              "label",
+              "role"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "hunk": {
+                "type": "string"
+              },
+              "file": {
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "home",
+                  "excerpt"
+                ]
+              },
+              "focus": {
+                "$ref": "#/$defs/range"
+              },
+              "kind": {
+                "enum": [
+                  "migration",
+                  "adr",
+                  "doc",
+                  "type",
+                  "config",
+                  "generated"
+                ]
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 160
+              }
+            }
+          }
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "enum": [
+                  "dormant",
+                  "producer-only",
+                  "interim",
+                  "inverted-order",
+                  "outside-stack"
+                ]
+              },
+              "text": {
+                "$ref": "#/$defs/sentence"
+              },
+              "completedBy": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Layer id that completes, consumes or replaces this, or null."
+              },
+              "caveat": {
+                "$ref": "#/$defs/id",
+                "description": "The caveat that records when and where an open flag closes: required when completedBy is null, since nothing in the change completes it."
+              },
+              "status": {
+                "enum": [
+                  "candidate",
+                  "confirmed",
+                  "dropped"
+                ]
+              },
+              "evidence": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "slowDown": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "decision": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "required": [
+            "question",
+            "branches"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "question": {
+              "$ref": "#/$defs/sentence"
+            },
+            "branches": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/id"
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "outcome": {
+                    "type": "string",
+                    "maxLength": 160
+                  }
+                }
+              }
+            }
+          }
+        },
+        "branch": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Set on stops that belong to a failure branch; the main path leaves it null."
+        },
+        "scene": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transition": {
+          "type": "string",
+          "maxLength": 160,
+          "description": "Connective line to the next stop. Empty on the last stop."
+        },
+        "see": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        }
+      }
+    },
+    "shape": {
+      "type": "object",
+      "required": [
+        "label"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "shape": {
+          "type": "string",
+          "maxLength": 900,
+          "description": "A short TS-like or JSON-like shape with the fields that matter here."
+        }
+      }
+    },
+    "anchor": {
+      "type": "object",
+      "required": [
+        "hunk",
+        "role",
+        "label"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "hunk": {
+          "type": "string",
+          "description": "Hunk id from index.md, e.g. apps/x/y.ts#h2."
+        },
+        "role": {
+          "enum": [
+            "home",
+            "excerpt"
+          ],
+          "description": "Exactly one home per hunk across the outline; excerpts re-show part of a homed hunk."
+        },
+        "focus": {
+          "$ref": "#/$defs/range"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "What this code does or why it matters, not the file name."
+        }
+      }
+    },
+    "range": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "Inclusive head-side line range inside the hunk (old side for a deletion-only hunk)."
+    },
+    "claim": {
+      "type": "object",
+      "required": [
+        "text",
+        "state",
+        "stops"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "$ref": "#/$defs/sentence"
+        },
+        "state": {
+          "enum": [
+            "complete",
+            "later",
+            "open"
+          ],
+          "description": "complete: this layer completes it. later: a later layer completes it (completedBy). open: no layer in this stack completes it."
+        },
+        "stops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "completedBy": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "caveat": {
+          "$ref": "#/$defs/id",
+          "description": "The caveat that records when and where an open claim closes: required when state is open."
+        }
+      }
+    },
+    "biography": {
+      "type": "object",
+      "required": [
+        "file",
+        "entries"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "layer",
+              "summary"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "layer": {
+                "$ref": "#/$defs/id"
+              },
+              "summary": {
+                "$ref": "#/$defs/sentence"
+              }
+            }
+          }
+        }
+      }
+    },
+    "term": {
+      "type": "object",
+      "required": [
+        "term"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "term": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "def": {
+          "$ref": "#/$defs/sentence"
+        },
+        "stop": {
+          "$ref": "#/$defs/id",
+          "description": "The stop where a reader first meets the term."
+        }
+      },
+      "description": "A term needs a `def`, unless a brief item names it in its `glossary`."
+    },
+    "reference": {
+      "type": "object",
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "What the entry answers, in the reader's words, lowercase."
+        },
+        "text": {
+          "$ref": "#/$defs/prose"
+        },
+        "picture": {
+          "type": "string",
+          "description": "A drawing in text, shown exactly as written in the code font."
+        },
+        "lang": {
+          "enum": [
+            "diagram",
+            "text",
+            "ts",
+            "js",
+            "json",
+            "yaml",
+            "sql",
+            "ruby",
+            "py",
+            "go",
+            "sh",
+            "css",
+            "md"
+          ],
+          "description": "What the picture and the compared pictures hold. `diagram`, the default, quiets a drawing's lines and arrows and colors the code names, quotes and numbers between them; a language colors code the way a diff's lines are colored; `text` stays plain. Coloring never changes a character."
+        },
+        "compare": {
+          "type": "object",
+          "description": "Two pictures of the same thing, before the change and at the tip, drawn as two panes: side by side when both fit the column, else one over the other.",
+          "required": [
+            "before",
+            "after"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "before": {
+              "$ref": "#/$defs/pane"
+            },
+            "after": {
+              "$ref": "#/$defs/pane"
+            }
+          }
+        },
+        "model": {
+          "$ref": "#/$defs/model"
+        },
+        "table": {
+          "type": "object",
+          "required": [
+            "head",
+            "rows"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "head": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "string",
+                "maxLength": 40
+              }
+            },
+            "rows": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "faq": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "q",
+              "a"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "q": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "a": {
+                "$ref": "#/$defs/prose"
+              }
+            }
+          }
+        },
+        "after": {
+          "$ref": "#/$defs/prose",
+          "description": "Prose under the picture, the table or the answers."
+        },
+        "hops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "description": "The hops this entry explains; each one's stage links here."
+        },
+        "opening": {
+          "type": "boolean",
+          "description": "Shown open at the top of the opening, above the flow, instead of folded in the reference: the release plan, and anything else a reviewer must act on before merging."
+        },
+        "caveats": {
+          "type": "boolean",
+          "description": "The known caveats draw here, one card each, in the reference's order. Without such an entry they draw last in the reference."
+        }
+      }
+    },
+    "pane": {
+      "type": "object",
+      "required": [
+        "label",
+        "picture"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "Which side and where it stands, such as `before · base e196deb` or `tip · #9520`."
+        },
+        "picture": {
+          "type": "string"
+        }
+      }
+    },
+    "mark": {
+      "enum": [
+        "new",
+        "changed"
+      ],
+      "description": "What the stack does to this piece; `layer` names the PR that does it. A piece with no mark stands as it stood before the stack."
+    },
+    "model": {
+      "type": "object",
+      "description": "The domain model as a chart: every entity a box, every relation an arrow, and a mark on each piece the stack adds or changes. The chart lays itself out; the entry's table, when it has one, folds under it.",
+      "required": [
+        "entities",
+        "relations"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "entities": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 24
+              },
+              "line": {
+                "type": "string",
+                "maxLength": 32,
+                "description": "At most one short line under the name: the key fact, such as `one per provider call`."
+              },
+              "mark": {
+                "$ref": "#/$defs/mark"
+              },
+              "layer": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "from",
+              "to",
+              "label"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "from": {
+                "type": "string",
+                "description": "The owner or the actor, by entity id; the arrow points away from it."
+              },
+              "to": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 20,
+                "description": "What the relation does, read from `from` to `to`: `has many`, `writes`, `starts`, `belongs to`."
+              },
+              "mark": {
+                "$ref": "#/$defs/mark"
+              },
+              "layer": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "brief": {
+      "type": "object",
+      "description": "What to know first: the few ideas every later section uses, each defined once, folded under the intent. A brief item lists the glossary terms it defines, and the glossary shows the item's text for them.",
+      "required": [
+        "title",
+        "summary",
+        "items"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "summary": {
+          "$ref": "#/$defs/sentence",
+          "description": "Who opens it and what it costs, on the folded line."
+        },
+        "skip": {
+          "$ref": "#/$defs/sentence",
+          "description": "The question a reader who can skip it already answers."
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "term",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "term": {
+                "type": "string",
+                "maxLength": 40
+              },
+              "text": {
+                "$ref": "#/$defs/prose"
+              },
+              "links": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "label",
+                    "href"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "maxLength": 80
+                    },
+                    "href": {
+                      "type": "string",
+                      "pattern": "^(#[\\w-]+|https://\\S+)$",
+                      "description": "A stop, chapter, hop, reference entry or term on the page (`#id`), or a web page."
+                    }
+                  }
+                }
+              },
+              "hop": {
+                "$ref": "#/$defs/id",
+                "description": "The hop that shows this idea; its link opens the hop on the flow's stage."
+              },
+              "glossary": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                "description": "The glossary terms this item defines, each linked here. The item's own term, and a term with no def, shows the item's text; a narrower term keeps its def."
+              }
+            }
+          }
+        },
+        "closing": {
+          "$ref": "#/$defs/prose"
+        }
+      }
+    },
+    "caveat": {
+      "type": "object",
+      "description": "One decision the change makes knowingly imperfect, so a reader who meets it does not reopen it. The same caveat lives in the code's docs, and `planned` links there.",
+      "required": [
+        "id",
+        "title",
+        "did",
+        "why",
+        "cost",
+        "fix",
+        "planned",
+        "where"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 90,
+          "description": "The decision in a few words, as a reader would name it."
+        },
+        "did": {
+          "$ref": "#/$defs/sentence",
+          "description": "What the code does."
+        },
+        "why": {
+          "$ref": "#/$defs/sentence",
+          "description": "Why it stands for now."
+        },
+        "cost": {
+          "$ref": "#/$defs/sentence",
+          "description": "What it costs while it stands: what can go wrong, and what holds it meanwhile."
+        },
+        "fix": {
+          "$ref": "#/$defs/sentence",
+          "description": "The fix, in one sentence."
+        },
+        "planned": {
+          "type": "object",
+          "description": "Where the fix is planned: a plan's Known caveats section, an invariants row. `path` is a repository path, with an optional `#anchor`, linked at the tip; `href` is an absolute link.",
+          "required": [
+            "label"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "label": {
+              "type": "string",
+              "maxLength": 90
+            },
+            "path": {
+              "type": "string",
+              "pattern": "^[^\\s#]+(#[^\\s]+)?$"
+            },
+            "href": {
+              "type": "string",
+              "pattern": "^https://"
+            }
+          }
+        },
+        "where": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "description": "The stops and hops where the decision shows; each carries a caveat marker."
+        },
+        "code": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[^\\s#]+(#[^\\s]+)?$"
+          },
+          "description": "Where it lives in code, `path#symbol`, linked at the tip."
+        }
+      }
+    }
+  }
+}
